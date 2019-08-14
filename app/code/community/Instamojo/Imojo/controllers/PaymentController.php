@@ -1,5 +1,10 @@
 <?php
 
+if (!function_exists('boolval')) {
+    function boolval($val) {
+            return (bool) $val;
+    }
+}
 
 class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Action
 {
