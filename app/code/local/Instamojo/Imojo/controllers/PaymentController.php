@@ -1,12 +1,15 @@
 <?php
 
+$LOG_FILE_NAME = 'imojo.log';
+
 class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Action
 {
     // Redirect to instamojo 
     public function redirectAction()
     {
+        global $LOG_FILE_NAME;
         try {
-            Mage::Log('Step 5 Process: Loading the redirect.html page');
+            Mage::Log('Step 5 Process: Loading the redirect.html page', Zend_Log::DEBUG, $LOG_FILE_NAME);
             $this->loadLayout();
             // Get latest order data
             $orderId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
@@ -32,7 +35,8 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $private_salt = Mage::getStoreConfig('payment/imojo/private_salt');
             $custom_field = Mage::getStoreConfig('payment/imojo/custom_field');
 
-            Mage::log("Data from Backend: $url | $api_key | $auth_token | $private_salt | $custom_field");
+            // Mage::helper('imojo')->myLog("Data from Backend: $url | $api_key | $auth_token | $private_salt | $custom_field"); 
+            Mage::log("Data from Backend: $url | $api_key | $auth_token | $private_salt | $custom_field", Zend_Log::DEBUG, $LOG_FILE_NAME);
 
             $data = Array();
             $data['data_email'] = substr($email, 0, 75);
@@ -41,16 +45,17 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $data['data_amount'] = $amount;
             $data['data_' . $custom_field] = $rmTranid . "-". $orderId;
 
-            Mage::log("Transaction-order ID: " . ($rmTranid . "-". $orderId));
+            // Mage::helper('imojo')->myLog("Transaction-order ID: " . ($rmTranid . "-". $orderId));
 
-
+            Mage::log("Transaction-order ID: " . ($rmTranid . "-". $orderId), Zend_Log::DEBUG, $LOG_FILE_NAME);
 
             ksort($data, SORT_STRING | SORT_FLAG_CASE);
             $message = implode('|', $data);
             $sign = hash_hmac("sha1", $message, $private_salt);
             $data['data_sign'] = $sign;
-
-            Mage::log("Signature is: $sign");
+            
+            // Mage::helper('imojo')->myLog("Signature is: $sign");
+            Mage::log("Signature is: $sign", Zend_Log::DEBUG, $LOG_FILE_NAME);
 
             $link= $url . "?intent=buy&";
             $link .= "data_readonly=data_email&data_readonly=data_amount&data_readonly=data_phone&data_readonly=data_name&data_readonly=data_$custom_field&data_hidden=data_$custom_field";
@@ -76,49 +81,62 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $this->renderLayout();
         } catch (Exception $e){
             Mage::logException($e);
+            Mage::log($e, Zend_Log::ERR, $LOG_FILE_NAME);
             parent::_redirect('checkout/cart');
         }
     }
 
     // Redirect from Instamojo
     // The response action is triggered when your gateway sends back a response after processing the customer's payment
-    public function responseAction() {   
+    public function responseAction() {
+
+        global $LOG_FILE_NAME; 
+
+        Mage::log("Running response action", Zend_Log::DEBUG, $LOG_FILE_NAME); 
 
         $custom_field = Mage::getStoreConfig('payment/imojo/custom_field');
         $status = $this->getRequest()->getParam('status');
         $insta_id = $this->getRequest()->getParam('payment_id');
         $this->loadLayout();
 
-        // // Do curl here to get order id and information from instamojo;
-        $data= $this->_getcurlInfo($insta_id);
-        $order_tran_id = explode('-',  $data['payment']['custom_fields'][$custom_field]['value']);
-        $transactionId = $order_tran_id[0];
-        $orderId = $order_tran_id[1];
-        $amount = $data['payment']['amount'];
-
-        // Get order details
-        $order = Mage::getModel('sales/order');
-        $order->loadByIncrementId($orderId);
-        $this->_processInvoice($orderId);
-        $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
-        $order->sendNewOrderEmail();
-        $order->setEmailSent(true);
-
-        // Close the transaction
-        $payment = $order->getPayment();
-        $transaction = $payment->getTransaction($transactionId);  
-        $data = $transaction->getAdditionalInformation();
-        $url = $data['raw_details_info']['Url'];
-        $transaction->setAdditionalInformation(Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
-                            array('InstmojoId'=> $insta_id,
-                                  'Context'=>'Token payment',
-                                  'Amount'=>$amount,
-                                  'Status'=>1,
-                                  'Url'=>$url))->save();
-        $transaction->setParentTxnId($insta_id)->save();
+        Mage::log("Status: $status| Payment ID: $insta_id", Zend_Log::DEBUG, $LOG_FILE_NAME);
+        // Do curl here to get order id and information from instamojo;
+        $data = $this->_getcurlInfo($insta_id);
+        $payment_status = $data['payment']['status'];
         
         // What if Id or status doesnt exit?
-        if($status){
+        if($payment_status === "Credit"){
+            Mage::log("Payment was successfull for $insta_id", Zend_Log::DEBUG, $LOG_FILE_NAME);
+            $tr_ord_id = $data['payment']['custom_fields'][$custom_field]['value'];
+            Mage::log("Value of Tran-order ID: $tr_ord_id", Zend_Log::DEBUG, $LOG_FILE_NAME);
+            $order_tran_id = explode('-',  $tr_ord_id);
+            $transactionId = $order_tran_id[0];
+            $orderId = $order_tran_id[1];
+            $amount = $data['payment']['amount'];
+
+            // Get order details
+            $order = Mage::getModel('sales/order');
+            $order->loadByIncrementId($orderId);
+            $this->_processInvoice($orderId);
+            $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
+            $order->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT, false)->save();
+            $order->sendNewOrderEmail();
+            $order->setEmailSent(true);
+
+            // Close the transaction
+            $payment = $order->getPayment();
+            $transaction = $payment->getTransaction($transactionId);  
+            $data = $transaction->getAdditionalInformation();
+            $url = $data['raw_details_info']['Url'];
+            $transaction->setAdditionalInformation(Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS,
+                                array('InstmojoId'=> $insta_id,
+                                      'Context'=>'Token payment',
+                                      'Amount'=>$amount,
+                                      'Status'=>1,
+                                      'Url'=>$url))->save();
+            $transaction->setParentTxnId($insta_id)->save();
+            $payment->setIsTransactionClosed(1);
+            // $this->_processInvoice($orderId);
             $block = $this->getLayout()->createBlock('Mage_Core_Block_Template',
                                                      'imojo',
                                                      array('template' => 'imojo/success.phtml'))->assign(array('instaId'=> $insta_id));   
@@ -129,9 +147,6 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
                                                      array('template' => 'imojo/failure.phtml'))->assign(array('instaId'=> $insta_id));      
         }
         $this->getLayout()->getBlock('content')->append($block);
-        //$this->_processInvoice($orderId);
-        $order->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT, false)->save();
-        $payment->setIsTransactionClosed(1);
         $this->renderLayout();
        
         // Trigger emails for success / failure - Sending desposit email
@@ -142,6 +157,8 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
     }
 
     private function _processInvoice($orderId){
+
+        global $LOG_FILE_NAME;
 
         $order = Mage::getModel("sales/order")->load($orderId);
 
@@ -177,9 +194,10 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
 
     // Get the order id from Instamojo based the transaction id
     private function _getcurlInfo($iTransactionId){
+         global $LOG_FILE_NAME;
          try {
 
-            $cUrl = 'https://www.instamojo.com/api/1.1/payments/'.$iTransactionId;
+            $cUrl = 'https://www.instamojo.com:5000/api/1.1/payments/' . $iTransactionId;
             $api_key = Mage::getStoreConfig('payment/imojo/api_key');
             $auth_token = Mage::getStoreConfig('payment/imojo/auth_token');
 
@@ -194,6 +212,8 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $res = json_decode($response, true);
             curl_close($ch);   
         } catch (Exception $e) {
+            Mage::logException($e);
+            Mage::log($e, Zend_Log::ERR, $LOG_FILE_NAME);
             throw $e;
         }
         return $res;

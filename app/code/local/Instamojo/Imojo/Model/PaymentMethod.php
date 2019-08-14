@@ -1,6 +1,9 @@
 <?php
 // This module is more than a normal payment gateway
 // It needs dashboard and all
+
+$LOG_FILE_NAME = 'imojo.log';
+
 class Instamojo_Imojo_Model_PaymentMethod extends Mage_Payment_Model_Method_Abstract{
     /**
      * Availability options
@@ -34,15 +37,17 @@ class Instamojo_Imojo_Model_PaymentMethod extends Mage_Payment_Model_Method_Abst
     // Construct the redirect URL
     public function getOrderPlaceRedirectUrl()
     {   
-        Mage::Log('Step 2 Process: Getting the redirect URL: ' . Mage::getUrl('imojo/payment/redirect'));
-        // 
-        return Mage::getUrl('imojo/payment/redirect');      
+        global $LOG_FILE_NAME;
+        $redirect_url = Mage::getUrl('imojo/payment/redirect');
+        Mage::Log('Step 2 Process: Getting the redirect URL: $redirect_url', Zend_Log::DEBUG, $LOG_FILE_NAME);
+        return $redirect_url;      
     }
 
     //  Check why capture is not working. I clearly specified it in the config.xml file. WTF!
     // Need to look back into this issue more cleanly
     public function authorize(Varien_Object $payment, $amount){
-        Mage::Log('Step 0 Process: Authorize');
+        global $LOG_FILE_NAME;
+        Mage::Log('Step 0 Process: Authorize', Zend_Log::DEBUG, $LOG_FILE_NAME);
         // Haha interestingly this is working. Lolapa
         // $order = $payment->getOrder();
         // Create and capture transaction. How do we use it? Lets see.\
@@ -59,7 +64,8 @@ class Instamojo_Imojo_Model_PaymentMethod extends Mage_Payment_Model_Method_Abst
      */
     public function capture(Varien_Object $payment, $amount)
     {
-        Mage::Log('Step 1 Process: Create and capture the process');
+        global $LOG_FILE_NAME; 
+        Mage::Log('Step 1 Process: Create and capture the process', Zend_Log::DEBUG, $LOG_FILE_NAME);
         // parent::capture();
         // $order = $payment->getOrder();
         // Create and capture transaction. How do we use it? Lets see.\

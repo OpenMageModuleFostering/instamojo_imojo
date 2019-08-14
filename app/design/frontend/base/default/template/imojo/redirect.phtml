@@ -1,0 +1,33 @@
+<?php
+$_order = new Mage_Sales_Model_Order();
+
+// Get this guys last order
+$orderId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+$_order->loadByIncrementId($orderId);
+$custom_field = $$custom_field_name;
+?>
+<br>
+<br>
+<!-- We can peacefully add some nice redirection here with some intentional delay -->
+<div style="text-align:center">
+    <h2>We are redirecting you to payment. Please wait ...</h2>
+    <br>
+    <img src="http://i.imgur.com/KUJoe.gif" />
+</div>
+<!-- Hidden form to submit -->
+<form name="instamojo" method="get" action="<?php echo $url; ?>">
+    <input type="hidden" name="<?php echo $custom_field_name;?>" value="<?php echo $custom_field;?>"> 
+    <input type="hidden" name="data_amount" value="<?php echo $data_amount;?>">
+    <input type="hidden" name="data_email" value="<?php echo $data_email;?>">
+    <input type="hidden" name="data_name" value="<?php echo $data_name;?>">
+    <input type="hidden" name="data_phone" value="<?php echo $data_phone;?>">
+    <input type="hidden" name="intent" value="buy">
+    <input type="hidden" name="data_readonly" value="data_email">
+    <input type="hidden" name="data_readonly" value="data_name">
+    <input type="hidden" name="data_readonly" value="data_amount">
+    <input type="hidden" name="data_readonly" value="data_phone">
+    <input type="hidden" name="data_hidden" value="<?php echo $custom_field_name;?>">
+</form>
+<script type="text/javascript">
+document.instamojo.submit();
+</script>
