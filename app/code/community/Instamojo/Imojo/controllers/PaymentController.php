@@ -75,7 +75,7 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $transaction->save();
             $order->save();
 
-            $block = $this->getLayout()->createBlock('Mage_Core_Block_Template', 'imojo', array('template' => 'imojo/redirect.phtml'))
+            $block = $this->getLayout()->createBlock('Mage_Core_Block_Template', 'instamojo', array('template' => 'instamojo/redirect.phtml'))
                           ->assign(array_merge($data, array('url'=>$url, 'custom_field_name'=>'data_' . $custom_field)));
             $this->getLayout()->getBlock('content')->append($block);
             $this->renderLayout();
@@ -120,6 +120,7 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $this->_processInvoice($orderId);
             $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
             $order->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT, false)->save();
+            Mage::log("Pending payment is set to False");
             $order->sendNewOrderEmail();
             $order->setEmailSent(true);
 
@@ -138,13 +139,13 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $payment->setIsTransactionClosed(1);
             // $this->_processInvoice($orderId);
             $block = $this->getLayout()->createBlock('Mage_Core_Block_Template',
-                                                     'imojo',
-                                                     array('template' => 'imojo/success.phtml'))->assign(array('instaId'=> $insta_id));   
+                                                     'instamojo',
+                                                     array('template' => 'instamojo/success.phtml'))->assign(array('instaId'=> $insta_id));   
             // Curl fetch status information to cross compare
         }else{
             $block = $this->getLayout()->createBlock('Mage_Core_Block_Template',
-                                                     'imojo',
-                                                     array('template' => 'imojo/failure.phtml'))->assign(array('instaId'=> $insta_id));      
+                                                     'instamojo',
+                                                     array('template' => 'instamojo/failure.phtml'))->assign(array('instaId'=> $insta_id));      
         }
         $this->getLayout()->getBlock('content')->append($block);
         $this->renderLayout();

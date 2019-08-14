@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
     <name>Instamojo_Imojo</name>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
     <stability>stable</stability>
     <license uri="http://opensource.org/licenses/MIT">MIT</license>
     <channel>community</channel>
@@ -13,9 +13,9 @@ We provide you an out-of-the-box e-commerce framework that takes care of mundane
 </description>
     <notes>Fixed path to Global Configuration file.</notes>
     <authors><author><name>Instamojo</name><user>Instamojo</user><email>dev@instamojo.com</email></author></authors>
-    <date>2015-04-14</date>
-    <time>14:40:03</time>
-    <contents><target name="magecommunity"><dir name="Instamojo"><dir name="Imojo"><dir name="Helper"><file name="Data.php" hash="e53c6598fa917d8791e046b20d76d221"/></dir><dir name="Model"><file name="PaymentMethod.php" hash="3eb0e176696408fd756ca40ba022b1f3"/></dir><dir name="controllers"><file name="PaymentController.php" hash="409bb971dae78ace02f2a7b12f98a105"/></dir><dir name="etc"><file name="config.xml" hash="1f8d0c2f15fd2e1b6caea4fe04bd75b3"/><file name="system.xml" hash="428898819cd38b15ab4a222964179e65"/></dir></dir></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="imojo"><file name="deposit_failure.phtml" hash="a01f8d2f503ccaf5d3f6a4682b9caf2b"/><file name="deposit_success.phtml" hash="6952afc4383fbf0eab18ee94e185f329"/><file name="redirect.phtml" hash="42463d0fa90f0085320b5069ed9ba7af"/><file name="success.phtml" hash="ad5d2318608673f5ba6ea85bd784198f"/></dir></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="Instamojo_Imojo.xml" hash="9a80f70915e53671e26ea6476fdbe6a4"/></dir></target></contents>
+    <date>2015-04-15</date>
+    <time>01:34:19</time>
+    <contents><target name="magecommunity"><dir name="Instamojo"><dir name="Imojo"><dir name="Helper"><file name="Data.php" hash="e53c6598fa917d8791e046b20d76d221"/></dir><dir name="Model"><file name="PaymentMethod.php" hash="3eb0e176696408fd756ca40ba022b1f3"/></dir><dir name="controllers"><file name="PaymentController.php" hash="da162f1171565f117ff3c45dadcbd4c0"/></dir><dir name="etc"><file name="config.xml" hash="6783f653e9cc1cf88540ac34532479a5"/><file name="system.xml" hash="428898819cd38b15ab4a222964179e65"/></dir></dir></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="imojo"><file name="deposit_failure.phtml" hash="a01f8d2f503ccaf5d3f6a4682b9caf2b"/><file name="deposit_success.phtml" hash="6952afc4383fbf0eab18ee94e185f329"/><file name="redirect.phtml" hash="42463d0fa90f0085320b5069ed9ba7af"/><file name="success.phtml" hash="ad5d2318608673f5ba6ea85bd784198f"/></dir></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="Instamojo_Imojo.xml" hash="9a80f70915e53671e26ea6476fdbe6a4"/></dir></target></contents>
     <compatible/>
     <dependencies><required><php><min>5.3.0</min><max>5.6.6</max></php></required></dependencies>
 </package>
