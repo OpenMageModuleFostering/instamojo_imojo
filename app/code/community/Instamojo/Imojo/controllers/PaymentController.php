@@ -1,5 +1,10 @@
 <?php
 
+if (!function_exists('boolval')) {
+    function boolval($val) {
+            return (bool) $val;
+    }
+}
 
 class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Action
 {
@@ -21,26 +26,32 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $amount = $order-> getBaseGrandTotal();
             $email = $order->getCustomerEmail();
             $name = $order->getCustomerName();          
-            $phone = $order->getBillingAddress()->getTelephone();
+            $phone = substr(str_replace(' ', '', $order->getBillingAddress()->getTelephone()), 0, 20);
             $rmTranid = time();
 
             $index = strpos($amount, '.');
             if ($index !== False){
                 $amount = substr($amount, 0, $index+3);  
             }
-            
-            $url = Mage::getStoreConfig('payment/imojo/payment_url');
-            $api_key = Mage::getStoreConfig('payment/imojo/api_key');
-            $auth_token = Mage::getStoreConfig('payment/imojo/auth_token');
-            $private_salt = Mage::getStoreConfig('payment/imojo/private_salt');
-            $custom_field = Mage::getStoreConfig('payment/imojo/custom_field');
 
-            Mage::log("Data from Backend: $url | $api_key | $auth_token | $private_salt | $custom_field", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
+            $storeId = Mage::app()->getStore()->getStoreId();
+            $storeCode = Mage::app()->getStore()->getCode();
+            Mage::log("Store ID and Code: $storeId | $storeCode", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
+            $url = Mage::getStoreConfig('payment/imojo/payment_url', $storeId);
+            $api_key = Mage::getStoreConfig('payment/imojo/api_key', $storeId);
+            $auth_token = Mage::getStoreConfig('payment/imojo/auth_token', $storeId);
+            $private_salt = Mage::getStoreConfig('payment/imojo/private_salt', $storeId);
+            $custom_field = Mage::getStoreConfig('payment/imojo/custom_field', $storeId);
+            $disable_phone = boolval(Mage::getStoreConfig('payment/imojo/disable_phone', $storeId));
+
+            Mage::log("Data from Backend: $url | $api_key | $auth_token | $private_salt | $custom_field | $disable_phone", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
 
             $data = Array();
             $data['data_email'] = substr($email, 0, 75);
             $data['data_name'] = substr($name, 0, 20);
-            $data['data_phone'] = substr($phone, 0, 20);
+            if(!$disable_phone){
+                $data['data_phone'] = $phone;
+            }
             $data['data_amount'] = $amount;
             $data['data_' . $custom_field] = $rmTranid . "-". $orderId;
 
@@ -59,11 +70,18 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $message = implode('|', $data);
             $sign = hash_hmac("sha1", $message, $private_salt);
             $data['data_sign'] = $sign;
+            $data['data_phone'] = $phone;
             
             Mage::log("Signature is: $sign", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
 
-            $link= $url . "?embed=form&";
-            $link .= "data_readonly=data_email&data_readonly=data_amount&data_readonly=data_phone&data_readonly=data_name&data_readonly=data_$custom_field&data_hidden=data_$custom_field";
+            if(!$disable_phone){
+                $link = $url . "?embed=form&data_readonly=data_phone&";
+            }
+            else{
+                $link = $url . "?";   
+            }
+
+            $link .= "data_readonly=data_email&data_readonly=data_amount&data_readonly=data_name&data_readonly=data_$custom_field&data_hidden=data_$custom_field";
             $link.="&data_amount=$amount&data_name=$name&data_email=$email&data_phone=$phone&data_$custom_field=$custom_field&data_sign=$sign";
             $payment = $order->getPayment();
             $payment->setTransactionId($rmTranid); // Make it unique.
@@ -81,7 +99,7 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $order->save();
 
             $block = $this->getLayout()->createBlock('Mage_Core_Block_Template', 'imojo', array('template' => 'imojo/redirect.phtml'))
-                          ->assign(array_merge($data, array('url'=>$url, 'custom_field_name'=>'data_' . $custom_field)));
+                          ->assign(array_merge($data, array('url'=>$url, 'custom_field_name'=>'data_' . $custom_field, 'disable_phone'=> $disable_phone)));
             $this->getLayout()->getBlock('content')->append($block);
             $this->renderLayout();
         } catch (Exception $e){
@@ -97,7 +115,11 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
 
         Mage::log("Running response action", Zend_Log::DEBUG, $this->LOG_FILE_NAME); 
 
-        $custom_field = Mage::getStoreConfig('payment/imojo/custom_field');
+        $storeId = Mage::app()->getStore()->getStoreId();
+        $storeCode = Mage::app()->getStore()->getCode();
+        Mage::log("Store ID and Code: $storeId | $storeCode", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
+
+        $custom_field = Mage::getStoreConfig('payment/imojo/custom_field', $storeId);
         $status = $this->getRequest()->getParam('status');
         $insta_id = $this->getRequest()->getParam('payment_id');
         $this->loadLayout();
@@ -117,7 +139,9 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
 
             // Get order details
             $order = Mage::getModel('sales/order');
+            $cart = Mage::getSingleton('checkout/cart');
             $order->loadByIncrementId($orderId);
+            $session = Mage::getSingleton('checkout/session');
 
             if($payment_status === "Credit"){
                 Mage::log("Payment was successfull for $insta_id", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
@@ -144,7 +168,21 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             }
             else if($payment_status === "Failed"){
                 $order->cancel()->setState(Mage_Sales_Model_Order::STATE_CANCELED, true, 'Payment failed.')->save();
-                $this->_redirect('checkout/onepage/failure', array('_secure'=>true));
+                $items = $order->getItemsCollection();
+
+                foreach ($items as $item) {
+                    try {
+                        $cart->addOrderItem($item);
+                    } catch (Mage_Core_Exception $e) {
+                        $session->addError($this->__($e->getMessage()));
+                        Mage::logException($e);
+                        continue;
+                    }
+                }
+                $cart->save();
+                Mage::getSingleton('core/session')->addError('Your payment failed. Please try again later');
+                $this->_redirect('checkout/cart');
+                return;
 
             }
             else if($payment_status === "Initiated"){
@@ -173,9 +211,13 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
     private function _getcurlInfo($iTransactionId){
          try {
 
-            $cUrl = 'https://www.instamojo.com/api/1.1/payments/' . $iTransactionId . '/';
-            $api_key = Mage::getStoreConfig('payment/imojo/api_key');
-            $auth_token = Mage::getStoreConfig('payment/imojo/auth_token');
+            $storeId = Mage::app()->getStore()->getStoreId();
+            $storeCode = Mage::app()->getStore()->getCode();
+            Mage::log("Store ID and Code: $storeId | $storeCode", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
+
+            $cUrl = 'http://192.168.43.157:5000/api/1.1/payments/' . $iTransactionId . '/';
+            $api_key = Mage::getStoreConfig('payment/imojo/api_key', $storeId);
+            $auth_token = Mage::getStoreConfig('payment/imojo/auth_token', $storeId);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $cUrl);

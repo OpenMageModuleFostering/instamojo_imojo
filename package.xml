@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
     <name>Instamojo_Imojo</name>
-    <version>0.1.1</version>
+    <version>0.1.10</version>
     <stability>stable</stability>
     <license uri="http://opensource.org/licenses/MIT">MIT</license>
     <channel>community</channel>
     <extends/>
     <summary>Collect Payments Instantly with a Link</summary>
-    <description>Instamojo lets you collect payments instantly. Start simply by creating a link by adding details. Share with your audience, through a link. And start collecting payments in minutes!&#xD;
+    <description>Instamojo lets you collect payments instantly. Start simply by creating a product by adding details. Share with your audience, through a link. And start collecting payments in minutes!&#xD;
 &#xD;
 &lt;br /&gt;&#xD;
 &lt;br /&gt;&#xD;
@@ -21,18 +21,21 @@ This extension allows you to use Instamojo as Payment Gateway.&#xD;
 &lt;br /&gt;&#xD;
 &#xD;
 &lt;ul&gt;&#xD;
-&lt;li&gt; Create a payment link of type Services/membership on our website http://www.instamojo.com&lt;/li&gt;&#xD;
+&lt;li&gt; Create a product by clicking on &lt;b&gt;Add a Product&lt;/b&gt; on your Instamojo dashboard and choose the category &lt;b&gt;Other&lt;/b&gt;.&lt;/li&gt;&#xD;
 &lt;li&gt;Set its base price as 10 and check &amp;quot;Use 'Pay What You Want'&amp;quot; option.&#xD;
 &lt;/li&gt;&#xD;
 &lt;li&gt;&#xD;
 If your website is say http://www.example.com then use http://www.example.com/index.php/imojo/payment/response/ as Custom Redirection URL. This is required to mark the payment as completed after redirection.&#xD;
 &lt;/li&gt;&#xD;
 &lt;li&gt;&#xD;
-Now save the Payment link and go to More Options -&amp;gt; Custom Fields.&#xD;
+Now save the Product.&#xD;
 &lt;/li&gt;&#xD;
 &lt;li&gt;&#xD;
-Create a custom field, let's say you named it &amp;quot;Orderd ID&amp;quot; and save it. The name is not important, the actual field name of this Custom Field will show up when you hover over that field, it has the format of &lt;b&gt;Field_xxxxx&lt;/b&gt;, where &amp;quot;xxxxx&amp;quot; are numbers.&#xD;
+On the product page go to More options and click on Custom Fields. Create a custom field called &lt;b&gt;Order ID&lt;/b&gt; and mark it as required. Click on Add Custom Field to save this custom field.&#xD;
 This is what we are going to enter in the plugin's settings in Magento backend.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+After the custom field has been created &lt;b&gt;Existing Custom Fields&lt;/b&gt; section will appear. Copy the name shown under &lt;b&gt;Field ID&lt;/b&gt; column, its format is &lt;b&gt;Field_xxxx&lt;/b&gt;, where &lt;b&gt;xxxx&lt;/b&gt; are some numbers(Note that this is case sensitive!).&#xD;
 &lt;/li&gt;&#xD;
 &lt;/ul&gt;&#xD;
 &lt;br /&gt;&#xD;
@@ -59,10 +62,10 @@ This is what we are going to enter in the plugin's settings in Magento backend.&
 &lt;b&gt;Private Salt:&lt;/b&gt; Get this from http://www.instamojo.com/developers&#xD;
 &lt;/li&gt;&#xD;
 &lt;li&gt;&#xD;
-&lt;b&gt;Payment URL:&lt;/b&gt; Payment link's URL&#xD;
+&lt;b&gt;Product URL:&lt;/b&gt; Product's URL&#xD;
 &lt;/li&gt;&#xD;
 &lt;li&gt;&#xD;
-&lt;b&gt;Custom Field:&lt;/b&gt; Field_xxxx format field name we got from hovering over the Custom field.&#xD;
+&lt;b&gt;Custom Field:&lt;/b&gt; Field ID of the custom field.&#xD;
 &lt;/li&gt;&#xD;
 &lt;/ul&gt;&#xD;
 &#xD;
@@ -70,11 +73,11 @@ This is what we are going to enter in the plugin's settings in Magento backend.&
 &lt;br /&gt;&#xD;
 &#xD;
 For detailed steps with screenshots visit our GitHub page: https://github.com/Instamojo/Instamojo-Magento</description>
-    <notes>- Updated PHP version to 5.6.18</notes>
+    <notes>- Updated PHP version</notes>
     <authors><author><name>Instamojo</name><user>Instamojo</user><email>dev@instamojo.com</email></author></authors>
-    <date>2016-02-22</date>
-    <time>07:13:26</time>
-    <contents><target name="magecommunity"><dir name="Instamojo"><dir name="Imojo"><dir name="Helper"><file name="Data.php" hash="e53c6598fa917d8791e046b20d76d221"/></dir><dir name="Model"><file name="PaymentMethod.php" hash="43002098206ee603c86b0b166d359f11"/></dir><dir name="controllers"><file name="PaymentController.php" hash="2264edbe39f374b9992f16d7e068bc6c"/></dir><dir name="etc"><file name="config.xml" hash="b829d8aa887ce2461fb050cecbce4099"/><file name="system.xml" hash="428898819cd38b15ab4a222964179e65"/></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="Instamojo_Imojo.xml" hash="9a80f70915e53671e26ea6476fdbe6a4"/></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="imojo"><file name="deposit_failure.phtml" hash="a01f8d2f503ccaf5d3f6a4682b9caf2b"/><file name="deposit_success.phtml" hash="6952afc4383fbf0eab18ee94e185f329"/><file name="redirect.phtml" hash="3e020d960f533b2e71e68c169bb90f22"/><file name="success.phtml" hash="ad5d2318608673f5ba6ea85bd784198f"/></dir></dir></dir></dir></dir></target></contents>
+    <date>2017-05-18</date>
+    <time>17:22:35</time>
+    <contents><target name="magecommunity"><dir name="Instamojo"><dir name="Imojo"><dir name="Helper"><file name="Data.php" hash="e53c6598fa917d8791e046b20d76d221"/></dir><dir name="Model"><file name="PaymentMethod.php" hash="43002098206ee603c86b0b166d359f11"/></dir><dir name="controllers"><file name="PaymentController.php" hash="07efa5f2ed9d1af9f95b088d03cf7476"/></dir><dir name="etc"><file name="config.xml" hash="d403c6c7f9d26a16ac326e798ffefc3b"/><file name="system.xml" hash="9b322fb2c27f4b8f0863f85eea68eafe"/></dir><file name=".DS_Store" hash="822777d708619165d544d3256174adc2"/></dir></dir></target><target name="mageetc"><dir name="modules"><file name="Instamojo_Imojo.xml" hash="9a80f70915e53671e26ea6476fdbe6a4"/></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="imojo"><file name="deposit_failure.phtml" hash="a01f8d2f503ccaf5d3f6a4682b9caf2b"/><file name="deposit_success.phtml" hash="6952afc4383fbf0eab18ee94e185f329"/><file name="redirect.phtml" hash="4e2252a9605cfbc035cc9d809498f333"/><file name="success.phtml" hash="ad5d2318608673f5ba6ea85bd784198f"/><file name=".DS_Store" hash="194577a7e20bdcc7afbb718f502c134c"/></dir></dir></dir></dir></dir></target></contents>
     <compatible/>
-    <dependencies><required><php><min>5.2.0</min><max>5.6.18</max></php></required></dependencies>
+    <dependencies><required><php><min>5.2.0</min><max>7.1.4</max></php></required></dependencies>
 </package>
