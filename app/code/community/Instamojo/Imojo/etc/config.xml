@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Instamojo_Imojo>
-            <version>0.0.6</version>
+            <version>0.0.7</version>
         </Instamojo_Imojo>
     </modules>
     <global>
