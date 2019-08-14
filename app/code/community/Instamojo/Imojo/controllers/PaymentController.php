@@ -215,7 +215,7 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $storeCode = Mage::app()->getStore()->getCode();
             Mage::log("Store ID and Code: $storeId | $storeCode", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
 
-            $cUrl = 'http://192.168.43.157:5000/api/1.1/payments/' . $iTransactionId . '/';
+            $cUrl = 'https://www.instamojo.com/api/1.1/payments/' . $iTransactionId . '/';
             $api_key = Mage::getStoreConfig('payment/imojo/api_key', $storeId);
             $auth_token = Mage::getStoreConfig('payment/imojo/auth_token', $storeId);
 
