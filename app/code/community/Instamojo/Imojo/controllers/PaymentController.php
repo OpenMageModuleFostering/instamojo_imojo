@@ -197,7 +197,7 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
          global $LOG_FILE_NAME;
          try {
 
-            $cUrl = 'https://www.instamojo.com:5000/api/1.1/payments/' . $iTransactionId;
+            $cUrl = 'https://www.instamojo.com/api/1.1/payments/' . $iTransactionId;
             $api_key = Mage::getStoreConfig('payment/imojo/api_key');
             $auth_token = Mage::getStoreConfig('payment/imojo/auth_token');
 

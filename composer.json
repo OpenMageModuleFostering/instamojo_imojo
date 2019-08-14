@@ -3,7 +3,7 @@
     "type": "magento-module",
     "license": "MIT",
     "homepage": "",
-    "description": "Make payments using Instamojo Payment Gateway",
+    "description": "Collect Payments Instantly with a Link",
     "authors": [
     {
         "name": "Instamojo",
