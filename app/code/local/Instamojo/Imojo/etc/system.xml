@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<config>
+   <sections>
+<!-- payment tab -->
+        <payment>
+            <groups>
+<!-- newmodule fieldset -->
+                <imojo translate="label" module="paygate">
+<!-- will have title 'New Module' -->
+                    <label>Instamojo Checkout</label>
+<!-- position between other payment methods -->
+                    <sort_order>1</sort_order>
+<!-- do not show this configuration options in store scope -->
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+<!-- is this payment method active for the website? -->
+                        <active translate="label">
+<!-- label for the field -->
+                            <label>Enabled</label>
+<!-- input type for configuration value -->
+                            <frontend_type>select</frontend_type>
+<!-- model to take the option values from -->
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+<!-- field position -->
+                            <sort_order>1</sort_order>
+<!-- do not show this field in store scope -->
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                        <order_status translate="label">
+                            <label>New order status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        <api_key translate="label">
+                            <label>API Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>57</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </api_key>
+                        <auth_token translate="label">
+                            <label>Auth Token</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>58</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </auth_token>
+                        <private_salt translate="label">
+                            <label>Private salt</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>59</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </private_salt>
+                        <payment_url translate="label">
+                            <label>Payment URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </payment_url>
+                        <custom_field translate="label">
+                            <label>Custom Field</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>61</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </custom_field>
+                        <payment_action translate="label">
+                            <label>Payment Action</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>paygate/authorizenet_source_paymentAction</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </payment_action>
+                    </fields>
+                </imojo>
+            </groups>
+        </payment>
+    </sections>
+</config>

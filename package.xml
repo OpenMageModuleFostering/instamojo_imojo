@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+    <name>Instamojo_Imojo</name>
+    <version>0.0.1</version>
+    <stability>stable</stability>
+    <license uri="http://opensource.org/licenses/MIT">MIT</license>
+    <channel>community</channel>
+    <extends/>
+    <summary>Make payments using Instamojo Payment Gateway</summary>
+    <description>Instamojo lets you collect payments instantly. Start simply by creating a link by adding details. Share with your audience, through a link. And start collecting payments in minutes!&#xD;
+&#xD;
+We provide you an out-of-the-box e-commerce framework that takes care of mundane stuff from payments to delivery. All you need to do is share a link wherever your audience is.&#xD;
+</description>
+    <notes>Initial release</notes>
+    <authors><author><name>Instamojo</name><user>Instamojo</user><email>dev@instamojo.com</email></author></authors>
+    <date>2015-04-13</date>
+    <time>15:35:31</time>
+    <contents><target name="magelocal"><dir name="Instamojo"><dir name="Imojo"><dir name="Helper"><file name="Data.php" hash="e53c6598fa917d8791e046b20d76d221"/></dir><dir name="Model"><file name="PaymentMethod.php" hash="a2e7744846b4ca05399f11bdecefcf7c"/></dir><dir name="controllers"><file name="PaymentController.php" hash="3da048cb36d7f7a8b5dacd4d0b00875c"/></dir><dir name="etc"><file name="config.xml" hash="9eb5aecb2c09a94639622ba59cab94cc"/><file name="system.xml" hash="428898819cd38b15ab4a222964179e65"/></dir></dir></dir></target></contents>
+    <compatible/>
+    <dependencies><required><php><min>5.3.0</min><max>5.6.6</max></php></required></dependencies>
+</package>
