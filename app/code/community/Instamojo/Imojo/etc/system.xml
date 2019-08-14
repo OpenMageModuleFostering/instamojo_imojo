@@ -64,7 +64,7 @@
                             <show_in_store>1</show_in_store>
                         </private_salt>
                         <payment_url translate="label">
-                            <label>Payment URL</label>
+                            <label>Product URL</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>60</sort_order>
                             <show_in_default>1</show_in_default>
