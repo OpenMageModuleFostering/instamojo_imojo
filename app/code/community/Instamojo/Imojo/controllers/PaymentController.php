@@ -1,10 +1,5 @@
 <?php
 
-if (!function_exists('boolval')) {
-    function boolval($val) {
-            return (bool) $val;
-    }
-}
 
 class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Action
 {
@@ -26,7 +21,7 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $amount = $order-> getBaseGrandTotal();
             $email = $order->getCustomerEmail();
             $name = $order->getCustomerName();          
-            $phone = substr(str_replace(' ', '', $order->getBillingAddress()->getTelephone()), 0, 20);
+            $phone = $order->getBillingAddress()->getTelephone();
             $rmTranid = time();
 
             $index = strpos($amount, '.');
@@ -42,16 +37,13 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $auth_token = Mage::getStoreConfig('payment/imojo/auth_token', $storeId);
             $private_salt = Mage::getStoreConfig('payment/imojo/private_salt', $storeId);
             $custom_field = Mage::getStoreConfig('payment/imojo/custom_field', $storeId);
-            $disable_phone = boolval(Mage::getStoreConfig('payment/imojo/disable_phone', $storeId));
 
-            Mage::log("Data from Backend: $url | $api_key | $auth_token | $private_salt | $custom_field | $disable_phone", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
+            Mage::log("Data from Backend: $url | $api_key | $auth_token | $private_salt | $custom_field", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
 
             $data = Array();
             $data['data_email'] = substr($email, 0, 75);
             $data['data_name'] = substr($name, 0, 20);
-            if(!$disable_phone){
-                $data['data_phone'] = $phone;
-            }
+            $data['data_phone'] = substr($phone, 0, 20);
             $data['data_amount'] = $amount;
             $data['data_' . $custom_field] = $rmTranid . "-". $orderId;
 
@@ -70,18 +62,11 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $message = implode('|', $data);
             $sign = hash_hmac("sha1", $message, $private_salt);
             $data['data_sign'] = $sign;
-            $data['data_phone'] = $phone;
             
             Mage::log("Signature is: $sign", Zend_Log::DEBUG, $this->LOG_FILE_NAME);
 
-            if(!$disable_phone){
-                $link = $url . "?embed=form&data_readonly=data_phone&";
-            }
-            else{
-                $link = $url . "?";   
-            }
-
-            $link .= "data_readonly=data_email&data_readonly=data_amount&data_readonly=data_name&data_readonly=data_$custom_field&data_hidden=data_$custom_field";
+            $link= $url . "?embed=form&";
+            $link .= "data_readonly=data_email&data_readonly=data_amount&data_readonly=data_phone&data_readonly=data_name&data_readonly=data_$custom_field&data_hidden=data_$custom_field";
             $link.="&data_amount=$amount&data_name=$name&data_email=$email&data_phone=$phone&data_$custom_field=$custom_field&data_sign=$sign";
             $payment = $order->getPayment();
             $payment->setTransactionId($rmTranid); // Make it unique.
@@ -99,7 +84,7 @@ class Instamojo_Imojo_PaymentController extends Mage_Core_Controller_Front_Actio
             $order->save();
 
             $block = $this->getLayout()->createBlock('Mage_Core_Block_Template', 'imojo', array('template' => 'imojo/redirect.phtml'))
-                          ->assign(array_merge($data, array('url'=>$url, 'custom_field_name'=>'data_' . $custom_field, 'disable_phone'=> $disable_phone)));
+                          ->assign(array_merge($data, array('url'=>$url, 'custom_field_name'=>'data_' . $custom_field)));
             $this->getLayout()->getBlock('content')->append($block);
             $this->renderLayout();
         } catch (Exception $e){
