@@ -26,7 +26,9 @@ $custom_field = $$custom_field_name;
     <input type="hidden" name="data_readonly" value="data_name">
     <input type="hidden" name="data_readonly" value="data_amount">
     <input type="hidden" name="data_readonly" value="data_phone">
+    <input type="hidden" name="data_readonly" value="<?php echo $custom_field_name;?>">
     <input type="hidden" name="data_hidden" value="<?php echo $custom_field_name;?>">
+    <input type="hidden" name="data_sign" value="<?php echo $data_sign;?>">
 </form>
 <script type="text/javascript">
 document.instamojo.submit();
