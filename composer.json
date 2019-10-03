@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Instamojo_Imojo",
+    "name": "OpenMageModuleFostering\/Instamojo_Imojo",
     "type": "magento-module",
     "license": "MIT",
     "homepage": "",
     "description": "Collect Payments Instantly with a Link",
     "authors": [
-    {
-        "name": "Instamojo",
-        "email": "dev@instamojo.com"
-    }
-],
+        {
+            "name": "Instamojo",
+            "email": "dev@instamojo.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
